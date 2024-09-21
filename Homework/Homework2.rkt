@@ -1,0 +1,76 @@
+(define (inc x)
+  (+ x 1))
+
+(define (dec x)
+  (- x 1))
+
+; precondition x and y are positive integers
+; post condition the sum of x and y
+
+
+(define (myAdd x y)
+  (cond
+    ((zero? y) x)
+    (else (inc (myAdd x (dec y))))))
+
+; precondition x is a positive integer
+; post condition the sum of all the digits in x
+; 123 mod 10 is 12 and 3, mod 2 mod 1 and
+; 495 mod 10 is 49 and 5, mod 10 with 49 and u get 9, then you mod 10 with 4 you get 4
+; base case is when the number is less than 10
+
+(define (sum-digits x)
+  (cond
+    ((<= x 10) x)
+    (else (+ (remainder x 10) (sum-digits (floor (/ x 10)))))))
+
+; precondition l is a list
+; post condition is an integer value that represents how many items are in the l
+
+(define (myLength l)
+  (cond
+    ((null? l) 0)
+    (else (inc (myLength (cdr l))))
+    ))
+
+(define (first-n l n)
+  (cond
+    ((null? l) (quote()))
+    ((zero? n) (quote()))
+    (else (cons (car l) (first-n (cdr l) (dec n))))))
+
+(define (myAppend x y)
+  (cond
+    ((and (null? x) (null? y)) (quote()))
+    ((not (null? x)) (cons (car x) (myAppend (cdr x) y))) 
+    (else (cons (car y) (myAppend x (cdr y))))
+    ))
+    
+
+; Try your hand at modifying this program:
+
+; 1. to input x and integer k >= 0, and which returns x without the kth occurance of '()
+; - flawed spec, there can be less than k items of empty list, there can be less than k values
+; 2. to input x and return the index of the first occurance of '() in x
+
+
+; pre there are at least k empty lists
+; post returns original list without the kth empty list
+(define (kth-empty x k)
+  (cond
+    ((and (eq? k 1)(null? (car x))(cdr x)))
+    ((null? (car x)) (cons (car x) (kth-empty (cdr x) (dec k))))
+    (else (cons (car x) (kth-empty (cdr x) k)))
+    ))
+; pre there is at least one occurance of an empty list in the list
+; post returns an integer value that is the index of the first occurance 
+(define (first-occur x)
+  (cond
+    ((or (null? x) (null? (car x))) 0)
+    (else (inc (first-occur (cdr x))))
+    ))
+
+
+
+
+

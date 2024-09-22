@@ -1,3 +1,4 @@
+; Question 1, Solution 1
 (define (reverseNum x)
   (reverseNumHelper x 0))
 
@@ -8,6 +9,7 @@
     (else (reverseNumHelper (quotient num 10) (+ (modulo num 10) (* curr 10))))
     ))
 
+; Question 1, Solution 2
 (define (countPlace x)
   (cond
     ((< x 10) 0)
@@ -21,3 +23,13 @@
 
 (define (reverseNum2 x)
   (reverseNumHelper2 x (countPlace x)))
+
+
+; Question 2 Solution 
+(define (reverseListHelper lat new)
+  (cond
+    ((null? lat) new)
+    (else (reverseListHelper (cdr lat) (cons (car lat) new)))))
+
+(define (reverseList lat)
+  (reverseListHelper lat '()))

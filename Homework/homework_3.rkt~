@@ -33,5 +33,3 @@
 
 (define (reverseList lat)
   (reverseListHelper lat '()))
-
-; Qestion 3 Solution

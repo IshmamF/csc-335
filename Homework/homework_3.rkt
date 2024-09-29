@@ -13,20 +13,51 @@
     ))
 
 ; Question 1, Solution 2
+
+;Design Idea:
+; To get the last digit of a number x, we do x modulo 10. We then multiply it with 10 to the power of number of digits - 1,
+; since the last digit would now become the first. We add the value to the recursive call that will get
+; x quotient 10 and  number of digits - 1 as arguments.
+; We continue the iteration until we're at the first digit, which at that point, we can return it.
+; We would need to 
+
+; Pre: The program takes a integer >= 0 with no trailing 0s as an input
+; Post: Returns the number of digits in the input - 1
 (define (countPlace x)
   (cond
     ((< x 10) 0)
     (else (+ (countPlace (quotient x 10)) 1))))
+; Inductive Hypothesis:
+; If the pre is satisfied ahead of the recursive call, we can assume it works for inputs with 1 less digit.
+; x >= 0 is an integer, so (quotient x 10) is also an integer >= 0.
+; Base case: When x is 1 digit, we return 0. This is valid since although 1 digit should have 1 place,
+; for our helper function (reverseNumHelper2), we need place - 1 since we have to do a number to the power of
+; place value.
+; Inductive Step:
+; Provided the IH, and # of digits in (quotient x 10) is < # of digits in x , we can conclude that (countPlace (quotient x 10))
+; returns the number of places - 1. Every iteration, we're incrementing the stack by 1 until we hit out base case.
+; Termination: Program only stops when x has one digit aka less than 10. 
 
+; Pre: The program takes a integer >= 0 with no trailing 0s as an input
+; Post: Returns the positive integer reversed
 (define (reverseNumHelper2 num place)
   (cond
     ((< num 10) num)
     (else (+ (* (modulo num 10) (expt 10 place)) (reverseNumHelper2 (quotient num 10) (- place 1))))))
 
-
+; Pre: The program takes a integer >= 0 with no trailing 0s as an input
+; Post: Returns the positive integer reversed
 (define (reverseNum2 x)
   (reverseNumHelper2 x (countPlace x)))
 
+; Inductive Hypothesis:
+; If the pre is satisfied ahead of the recursive call, we can assume it works for inputs with 1 less digit.
+; num >= 0 is an integer, so (quotient num 10) is also an integer >= 0.
+; Base case: When num has one digit, we simply return it. 
+; Inductive Step: Provided the IH and # of digits in (quotient num 10) is < # of digits in num, we can conclude
+; (reverseNumHelper2 (quotient num 10) (- place 1)) returns the first digits reversed. We get the remainder, multiply it
+; by 10 to the power of place, and add it to the recursive call for each iteration.
+; Termination: Program only stops when x has one digit aka less than 10.
 
 ; Question 2
 

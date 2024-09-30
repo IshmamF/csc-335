@@ -1,0 +1,32 @@
+CSC 335
+1. 
+[x] Look through 1.2 notes
+2.
+[x] Look through office hour notes
+[] Watch office hour videos
+   [x] Prev 335 OH 6
+   [x] Prev 335 OH 5
+   [] Vid 3
+   [] Vid 4
+   [] Vid 5
+3.
+[] Create proofs of each question for Homework 2
+4. 
+[] Complete the questions for homework 3
+[] Create proofs of each question for Homework 3
+5.
+[] Understand how to prove an invariant for iteration
+
+CSC 332 
+[] Homework 
+   [] Read question(s) and slides for setup
+   [] Create solution 
+   [] SUBMIT
+
+Job Application
+[] Apply to 5 places
+[] Set up meeting with Rhea
+   [] Complete anything I need to do for CPDI
+
+Optional
+[] 1 section of AWS Certification

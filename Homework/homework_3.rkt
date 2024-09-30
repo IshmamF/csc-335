@@ -107,15 +107,15 @@
 ; pre: a binary tree
 ; post: a non negative integer
 
-; Design Idea: We iterate through the tree, where if it's atom we recurse on the cdr of the list, otherwise recurse
-; on both car and cdr of the list. We would have a counter that will be initially 0, and we will increment by 1
-; on the recursion of car of the list.
+; Design Idea: When looking at a tree, we make two decisions, go left or go right. We need to recurse through each path
+; (left and right) to figure out which one has the larger depth. Then we can choose to go down the largerr path.
+; We increment counter by 1 every time we go to the next node. If the list is empty or we hit an atom, we return counter.
 
 ; Guess Code:
 #; (define (getHeight lat cntr)
      (cond (( check if list is empty ) return cntr)
-           (( check if atom ) (simply recurse by doing cdr))
-           (( else ( recurse on car and increment cntr by 1)))
+           (( check if atom ) ( return cntr ))
+           (( else ( if the left subtree has higher depth, go on left subtree, else go on right subtree)))
            ))
 
 ; Code:

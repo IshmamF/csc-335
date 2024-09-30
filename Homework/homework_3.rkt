@@ -12,6 +12,7 @@
     (else (reverseNumHelper (quotient num 10) (+ (modulo num 10) (* curr 10))))
     ))
 
+;--------------------------------------------------------------------------------------------------------
 ; Question 1, Solution 2
 
 ;Design Idea:
@@ -53,12 +54,15 @@
 ; Inductive Hypothesis:
 ; If the pre is satisfied ahead of the recursive call, we can assume it works for inputs with 1 less digit.
 ; num >= 0 is an integer, so (quotient num 10) is also an integer >= 0.
-; Base case: When num has one digit, we simply return it. 
+
+; Base case: When num has one digit, we simply return it.
+
 ; Inductive Step: Provided the IH and # of digits in (quotient num 10) is < # of digits in num, we can conclude
 ; (reverseNumHelper2 (quotient num 10) (- place 1)) returns the first digits reversed. We get the remainder, multiply it
 ; by 10 to the power of place, and add it to the recursive call for each iteration.
 ; Termination: Program only stops when x has one digit aka less than 10.
 
+;--------------------------------------------------------------------------------------------------------
 ; Question 2
 
 ; Specify:
@@ -102,20 +106,21 @@
 
 ; Termination: When unprocessed list is empty, aka we've gone through the whole list, we can return the result (new)
 
+;--------------------------------------------------------------------------------------------------------
 ; Qestion 3
 
 ; pre: a binary tree
 ; post: a non negative integer
 
-; Design Idea: We iterate through the tree, where if it's atom we recurse on the cdr of the list, otherwise recurse
-; on both car and cdr of the list. We would have a counter that will be initially 0, and we will increment by 1
-; on the recursion of car of the list.
+; Design Idea: When looking at a tree, we make two decisions, go left or go right. We need to recurse through each path
+; (left and right) to figure out which one has the larger depth. Then we can choose to go down the largerr path.
+; We increment counter by 1 every time we go to the next node. If the list is empty or we hit an atom, we return counter.
 
 ; Guess Code:
 #; (define (getHeight lat cntr)
      (cond (( check if list is empty ) return cntr)
-           (( check if atom ) (simply recurse by doing cdr))
-           (( else ( recurse on car and increment cntr by 1)))
+           (( check if atom ) ( return cntr ))
+           (( else ( if the left subtree has higher depth, go on left subtree, else go on right subtree)))
            ))
 
 ; Code:

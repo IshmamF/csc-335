@@ -1,13 +1,13 @@
+; increments a number input by 1 and returns that new value
 (define (inc x)
   (+ x 1))
 
+; decrements a number input by 1 and returns that new value
 (define (dec x)
   (- x 1))
 
 ; precondition x and y are positive integers
 ; post condition the sum of x and y
-
-
 (define (myAdd x y)
   (cond
     ((zero? y) x)
@@ -18,7 +18,6 @@
 ; 123 mod 10 is 12 and 3, mod 2 mod 1 and
 ; 495 mod 10 is 49 and 5, mod 10 with 49 and u get 9, then you mod 10 with 4 you get 4
 ; base case is when the number is less than 10
-
 (define (sum-digits x)
   (cond
     ((<= x 10) x)
@@ -26,19 +25,23 @@
 
 ; precondition l is a list
 ; post condition is an integer value that represents how many items are in the l
-
 (define (myLength l)
   (cond
     ((null? l) 0)
     (else (inc (myLength (cdr l))))
     ))
 
+; precondition l is a list and n is a positive integer
+; post condition return l with it's first n values, if n is greater than the length of the list
+; it returns l 
 (define (first-n l n)
   (cond
     ((null? l) (quote()))
     ((zero? n) (quote()))
     (else (cons (car l) (first-n (cdr l) (dec n))))))
 
+; precondition x and y are both non-empty lists
+; post condition return a list with elements from both x and y
 (define (myAppend x y)
   (cond
     ((and (null? x) (null? y)) (quote()))

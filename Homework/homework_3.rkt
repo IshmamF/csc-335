@@ -130,8 +130,40 @@
         (else
          (let ((left (getHeight (car lat) (+ 1 cntr)))
                (right (getHeight (cadr lat) (+ 1 cntr))))
-          (cond
-           ((> left right)left)
-           (else right))))
+          (max left right)))
         ))
 
+; Question 4
+
+; Guess Code:
+(define (reverse-tree lat)
+     (cond ((null? lat) '())
+           ((atom? lat) lat)
+           (else
+           (let ((rest (reverse-tree (cdr lat))))
+             (cond
+               ((atom? (car lat)) (cons (car lat) rest))
+               (else (cons (reverse-tree (reverseList (car lat))) rest))
+           )))))
+
+(define (reverse-start lat)
+  (if (atom? lat)
+   lat
+   (reverse-tree (reverseList lat))))
+
+; Question 5
+
+; Guess Code:
+(define (count-occur t a)
+  (cond
+    ((null? t) 0)
+    ((atom? t)
+     (cond ((eq? t a) 1)
+           (else 0)))
+    ((atom? (car t))
+     (cond
+       ((eq? (car t) a) (+ 1 (count-occur (cdr t) a)))
+       (else (count-occur (cdr t) a))))
+    (else (+ (count-occur (car t) a) (count-occur (cdr t) a)))
+    ))
+                                     

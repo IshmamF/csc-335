@@ -86,7 +86,7 @@
 ; Guess-Invariant:
 ; reverseListHelper(N) = reverseListHelper(# of processed atoms) + reverseListHelper(# of unprocessed atoms).
 ; Strong enough because when our processed list is empty, we return the result.
-; Isn't weak enough because at the start we haven't processed any elements.
+; Is weak enough because at the start we haven't processed any elements at the start.
 
 ; Base Case:
 ; If lat is null, it should return new. The following holds because there are no more atoms to add

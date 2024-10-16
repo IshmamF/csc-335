@@ -1,0 +1,81 @@
+#lang racket
+(require racket/set)
+
+(define set1 (set 1 2 3))
+(define set2 (set 2 3 4))
+
+(set-union set1 set2)        ; Returns a set: '(1 2 3 4)
+(set-intersect set1 set2)    ; Returns a set: '(2 3)
+
+(define (set? list)
+  (cond ((null? list) #t)
+        ((member (car list) (cdr list)) #f)
+        (else (set? (cdr list)))))
+
+(define (multirember list target)
+  (cond ((null? list) '())
+        ((equal? target (car list)) (multirember (cdr list) target))
+        (else (cons (car list) (multirember (cdr list) target)))
+        ))
+
+(define (makeset list)
+  (cond ((null? list) '())
+        (else (cons (car list) (makeset (multirember (cdr list) (car list)))))))
+
+(define (subset? lst1 lst2)
+  (cond ((null? lst1) #t)
+        (else (and (member (car lst1) lst2)
+                   (subset? (cdr lst1) lst2)
+                   ))
+        ))
+
+(define (union lst1 lst2)
+  (cond ((null? lst1) lst2)
+        ((member (car lst1) lst2) (union (cdr lst1) lst2))
+        (else (cons (car lst1) (union (cdr lst1) lst2)))
+        ))
+
+(define (eqset? lst1 lst2)
+  (and (subset? lst1 lst2) (subset? lst2 lst1)))
+
+(define (intersect lst1 lst2)
+  (cond
+    ((null? lst1)'())
+    ((member (car lst1) lst2) (cons (car lst1)
+                                   (intersect (cdr lst1) lst2)))
+    (else (intersect (cdr lst1) lst2))
+    ))
+
+(define intersect?
+  (lambda (set1 set2)
+    (cond
+      ((null? set1) #f)
+      ((member (car set1) set2) #t)
+      (else (intersect? (cdr set1) set2)))))
+
+(define (xxx lst1 lst2)
+  (cond ((null? lst1) '())
+        ((member (car lst1) lst2) (xxx (cdr lst1) lst2))
+        (else (cons (car lst1) (xxx (cdr lst1) lst2)))))
+
+(define (intersectall l-set)
+  (cond ((null? (cdr l-set)) (car l-set))
+        (else (intersect (car l-set) (intersectall (cdr l-set))))))
+
+
+(define (revrel rel)
+  (cond ((null? rel) '())
+        ((list? rel) (cons (revrel (car rel)) (revrel (cdr rel))))
+        (else (cons (car rel) (revrel (cdr rel))))
+        ))
+
+(define (traverse-list-of-lists lst)
+  (cond
+    ((null? lst) '())  ; Base case: empty list
+    ((list? (car lst))  ; If the first element is a list
+     (cons (traverse-list-of-lists (car lst))  ; Recurse on the sublist
+     (traverse-list-of-lists (cdr lst))))  ; Then move to next element
+    (else
+     (display (car lst))  ; Print the element
+     (newline)
+     (cons (car lst) (traverse-list-of-lists (cdr lst))))))  ; Move to next element

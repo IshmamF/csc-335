@@ -1,0 +1,14 @@
+Definitions
+
+Free Variable : When the variable within the lambda is not used in the body, or just on its own (never defined in it's parent expressions)
+Bound Variable : When the variable within the lambda is used in the body
+Lexical Scope : The lambda environment a variable is in
+
+Data abstraction divides a data type into two pieces: an interface and an implementation.
+Interface tells us what the data of the type represents, what the operations of the data are, and what properties these operators may be relied on to have.
+Implementation provides a specific representation of the data and code for the operations that makes use of the specific data representation.
+
+Interface = What you can do with the data type.
+Think of it as a contract: it defines the operations you can use, without saying how they’re implemented.
+Implementation = How the data type works internally.
+It's about the details of how data is represented and how the operations are coded to make those functions work.

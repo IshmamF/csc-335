@@ -87,7 +87,7 @@
 
 ; Main Program
 
-(define lexical-scope
+(define lexical-address
   (lambda (exp)
     (define helper
       (lambda (env exp)
@@ -100,4 +100,5 @@
                 (else (mymap (lambda (exp) (helper env exp)) exp))
                 )))))
     (helper '() exp)))
-        
+
+(lexical-address '(lambda (a b c) (if (eqv? b c) ((lambda (c) (cons a c)) a) b)))

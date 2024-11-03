@@ -14,7 +14,10 @@
 ; Our base case is that we have a list of three elements where the first element is a colon, and in that case, we'll
 ; use a helper function that will take in the env, depth, and position, and locate the variable within the env using that information.
 ; If we don't find a variable at that depth/position, we return #f.
-; Which will map (: d p) to (variable d p), we then go through our environment again, and check if the depth and position match. 
+; Which will map (: d p) to (variable d p), we then go through our environment again, and check if the depth and position match.
+; If the depth and position match, we return the variable, otherwise #f.
+; Once we have everything processed , we check if output has #f in the end result.
+; If it does, we return the output, otherwise return #f.
 
 
 ; Concerns: Is it possible to locate the wrong variable?

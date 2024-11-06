@@ -139,7 +139,9 @@
             ((and (>= num2 num1) (>= num2 num3)) second)
             (else third)))))
 
-(define max-interior
+
+(define (max-interior tree)
+  (letrec ((helper
   (lambda (tree)
     (cases bintree tree
       (interior-node (key left right)
@@ -148,26 +150,27 @@
                        (cond 
                          ((and (is-leaf-node left) (is-leaf-node right))
                            (list key (+ left-sum right-sum)))
-                         ((is-leaf-node left)(let* ((right-call (max-interior right))
+                         ((is-leaf-node left)(let* ((right-call (helper right))
                                                     (right-max (cadr right-call)))
                                                (
                                                     if (>= (+ right-max left-sum) right-max)
                                                  (list key (+ right-max left-sum))
                                                  right-call)))
-                         ((is-leaf-node right)(let* ((left-call (max-interior left))
+                         ((is-leaf-node right)(let* ((left-call (helper left))
                                                      (left-max (cadr left-call)))
                                                 (
                                                   if (>= (+ left-max right-sum) left-max)
                                                  (list key (+ left-max right-sum))
                                                  left-call)))
-                         (else (let* ((left-call (max-interior left))
-                                      (right-call (max-interior right))
+                         (else (let* ((left-call (helper left))
+                                      (right-call (helper right))
                                       (left-max (cadr left-call))
                                       (right-max (cadr right-call)))
                                  (find-max (list key (+ left-max right-max))
                                      left-call
                                      right-call))))))
-      (else 'ignore))))
+      (else 'ignore)))))
+    (car (helper tree))))
 
 (define tree-a (interior-node 'a (leaf-node 2) (leaf-node 3)))
 (define tree-b (interior-node 'b (leaf-node -1) tree-a))

@@ -46,6 +46,9 @@
 ; (bintree-to-list (interior-node 'a (leaf-node 3) (leaf-node 4)))
 ; returns the list (interior-node a (leaf-node 3) (leaf-node 4))
 
+; BNF
+; bintree ::= <number> | <symbol> <bintree> <bintree>
+
 (define-datatype bintree bintree?
   (leaf-node (datum number?))
   (interior-node (key symbol?) (left bintree?) (right bintree?))
@@ -63,6 +66,13 @@
                      (list 'interior-node key (bintree-to-list left) (bintree-to-list right))))))
 
 
+(define leaf-sum
+  (lambda (tree)
+    (cases bintree tree
+      (leaf-node (datum) datum)
+      (interior-node (key left right)
+                     (+ (leaf-sum left)(leaf-sum right)))
+      )))
 
 (define tree (interior-node 'a (leaf-node 3) (leaf-node 4)))
 (define tree3
@@ -78,3 +88,87 @@
 ; > (max-interior tree-b)a> (max-interior tree-c)c
 ; The last invocation of max-interior might also have returned a, since both the a and c nodes
 ; have a leaf sum of 5.
+
+
+; Professor's Design Idea:
+; Create a list with pairs for each symbol, where
+; you'd have the form (symbol leaf-sum)
+; Use map to do cadr on the the list to get all the sums as a list
+; Use accumulate to find the max of the list
+; Reverse look up to find which symbol is associated with the max
+
+; My Design Idea:
+; we return a (symbol max-sum) at every recursive call, and
+; we can expect our sub-trees to be evaluated. Then we compare
+; the max-sum at each evaluated tree, and then return the list.
+; There are multiple cases
+; Our base case is that , both left and right are leaf-nodes
+; at that point we just get the values of left and right,
+; call them left-sum and right-sum, and return the sum and
+; symbol at current level. 
+; The next case(s) is whether left or right are leaf-nodes, but not
+; both. In the case our left is a leaf-node, we want to do the sum of
+; left-sum and the number
+; within the list returned from (max-interior right) call it right-max,
+; and compare it with right-max itself. If right-max is larger, we return
+; (max-interior right), else we return a list with the current key and the sum
+; we calculated. If right is a leaf-node, we do the same process but on the
+; other way around.
+; The last case is when both are interior nodes. In that case, we compare 
+; left-max (number within list returned from (max-interior left) , right-max,
+; and the sum of left-max and right-max. 
+
+(define is-leaf-node
+  (lambda (tree)
+    (cases bintree tree
+      (leaf-node (datum) #t)
+      (interior-node (key left right)#f))))
+
+; pre : List of lists that are of the form (symbol number)
+; post : (symbol number) where number is the largest out of the three
+
+(define find-max
+  (lambda (input)
+    (let* ((first (car input))
+           (second (cadr input))
+           (third (caddr input))
+           (num1 (cadr first))
+           (num2 (cadr second))
+           (num3 (cadr third)))
+      (cond ((and (>= num1 num2) (>= num1 num3)) first)
+            ((and (>= num2 num1) (>= num2 num3)) second)
+            (else third)))))
+
+(define max-interior
+  (lambda (tree)
+    (cases bintree tree
+      (interior-node (key left right)
+                     (let* ((left-sum (leaf-sum left))
+                            (right-sum (leaf-sum right)))
+                       (cond 
+                         ((and (is-leaf-node left) (is-leaf-node right))
+                           (list key (+ left-sum right-sum)))
+                         ((is-leaf-node left)(let* ((right-call (max-interior right))
+                                                    (right-max (cadr right-call)))
+                                               (
+                                                    if (>= (+ right-max left-sum) right-max)
+                                                 (list key (+ right-max left-sum))
+                                                 right-call)))
+                         ((is-leaf-node right)(let* ((left-call (max-interior left))
+                                                     (left-max (cadr left-call)))
+                                                (
+                                                  if (>= (+ left-max right-sum) left-max)
+                                                 (list key (+ left-max right-sum))
+                                                 left-call)))
+                         (else (let* ((left-call (max-interior left))
+                                      (right-call (max-interior right))
+                                      (left-max (cadr left-call))
+                                      (right-max (cadr right-call)))
+                                 (find-max (list key (+ left-max right-max))
+                                     left-call
+                                     right-call))))))
+      (else 'ignore))))
+
+(define tree-a (interior-node 'a (leaf-node 2) (leaf-node 3)))
+(define tree-b (interior-node 'b (leaf-node -1) tree-a))
+(define tree-c (interior-node 'c tree-b (leaf-node 1)))

@@ -4,6 +4,93 @@
 ; How does the execution time vary as this argument changes? How does the execution time vary as the base
 ; changes? Explain why.
 
+; Increment
+(define inc
+  (lambda (x)
+    (+ x 1)))
+
+; Decrement
+(define dec
+  (lambda (x)
+    (- x 1)))
+
+; Addition
+(define add
+  (lambda (x y)
+    (cond ((= x 0) y)
+          (else (inc (add (dec x) y))))))
+
+; Subtraction
+(define sub
+  (lambda (x y)
+    (cond ((= y 0) x)
+          (else (dec (sub x (dec y)))))))
+
+; Multiplication
+(define mult
+  (lambda (x y)
+    (cond ((= y 0) 0)
+          (else (add x (mult x (dec y)))))))
+
+; Division
+(define div
+  (lambda (x y)
+    (cond ((< x y) (list 0 x))
+          (else (list (inc (car (div (sub x y) y))) (cadr (div (sub x y) y))))
+          )))
+
+; Factorial
+(define fact
+  (lambda (n)
+    (cond ((= n 1) 1)
+          (else (mult n (fact (dec n)))))))
+
+; assume base-16
+; (2 1) = 18
+; (1 3) = 49
+; 18 + 49 = 67
+; (3 4)
+; (15 1) = 31
+; (2 3) = 50
+; (17 4) = 81
+; you cant have it over 16 though
+; (1 5) have to increment the next value, decrement current by 16
+; x = (15 15)
+; y = (1 2)
+; (0 2 1)
+; 15 + 1 = 16
+; 16 - 16 = 0
+; x = (15)
+; y = (1 2)
+; 15 + 1 = 16
+; If the next value isn't null, we add 1 to the next value in y
+; if it is null, we cons 1
+
+; add two bigits together 
+(define b-add
+  (lambda (x y)
+    (cond ((null? x) y)
+          ((null? y) x)
+          (else (let* ((curX (car x))
+                       (curY (car y))
+                       (curr-sum (add curX curY))
+                       (newX (remainder curr-sum 16))
+                       (nextX (cdr x))
+                       (nextY (cdr y)))
+                (cond ((and (>= curr-sum 16) (null? nextY) (null? nextX))
+                       (cons newX (cons 1 (b-add nextX nextY))))
+                      
+                       ((and (>= curr-sum 16) (null? nextY))
+                       (cons newX (b-add (cons (inc (car nextX))(cdr nextX)) nextY)))
+                       
+                      ((and (>= curr-sum 16) (null? nextX))
+                       (cons newX (b-add nextX (cons (inc (car nextY))(cdr nextY)))))
+                      
+                      ((>= curr-sum 16)(cons newX (b-add nextX (cons (inc (car nextY))(cdr nextY)))))
+                      
+                      (else (cons curr-sum (b-add nextX nextY)))))))))
+
+(b-add (list 15 15) (list 1 2))
 
 ; are my succ and pred defined correctly?
 ; do we create a function for factorial?
@@ -92,7 +179,7 @@
 
 ; Professor's Design Idea:
 ; Create a list with pairs for each symbol, where
-; you'd have the form (symbol leaf-sum)
+; you'd have the form (symbol max-sum)
 ; Use map to do cadr on the the list to get all the sums as a list
 ; Use accumulate to find the max of the list
 ; Reverse look up to find which symbol is associated with the max

@@ -105,25 +105,55 @@
     (cond ((iszero n) zero)
           (else (cons (succ n) (bigit (pred n)))))))
 ; pre: a number
-; post: a list of numbers that represent
+; post: a list of numbers that represent the number in a form
 
 (define (myrep m)
-  (define rep (lambda (n)
-                  (cond ((iszero n) zero)
-                        (else (let ((q (rep (quotient n m)))
-                              (r (remainder n m)))
-                          (cons r q))))))
-    rep)
-
-; define guarantees that it's bound to a function
-
-#;(define (myrep m)
   (letrec ((rep (lambda (n)
                   (cond ((iszero n) zero)
                         (else (let ((q (rep (quotient n m)))
                               (r (remainder n m)))
                           (cons r q)))))))
     rep))
+
+; Actual Succ
+; Bigit Increment
+; What are all the cases?
+; We increment a number between 0 and 14 by 1, which is very trivial
+; We increment a number that's at 15 by 1, in which case we have to carry
+; over to the next number, and current number becomes 0
+; We increment a number at the end of a list and it's 15, we have to cons a 1 to the list
+; We hit our base case of an empty list, function returns an empty list
+(define b-inc
+  (lambda (bigit)
+    (cond ((null? bigit) '())
+          ((>= (car bigit) 15)(let* ((next (cdr bigit)))
+                               (if (null? next)
+                                 (list 0 1)
+                                 (if (< (inc (car next)) 15)
+                                     (append (list 0 (inc (car next))) (cdr next))
+                                     (cons 0 (b-inc (cons (inc (car next)) (cdr next)))))
+                                         )))
+          (else (append (list (inc (car bigit))) (cdr bigit))))))
+
+; Actual Pred
+; Bigit Decrement
+; What are the cases?
+; When we have a 0 and decrement, the current number will be 15 and
+; next number gets decremented
+; We should check if the next number being decremented is 0, in which case
+; we dont return it
+(define b-sub
+  (lambda (bigit)
+    (cond ((null? bigit) '())
+          ((iszero (car bigit))(let* ((next (cdr bigit)))
+                                 (if (= (car next) 1)
+                                     (if (null? (cdr next))
+                                         (cons 15 (b-sub (cdr next)))
+                                         (append (list 15 0)(cdr next)))
+                                     (cons 15 (b-sub next)))))
+          (else (append (list (dec (car bigit))) (cdr bigit))))))
+                                     
+                                     
 
 
 (define base15 (myrep 15))

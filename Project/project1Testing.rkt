@@ -1,11 +1,13 @@
 ; Regular Fibonacci Sequence
-(define (fib n)
+#; (define (fib n)
   (cond ((zero? n) 0)
         ((= n 1) 1)
         (else (+ (fib (- n 1))(fib (- n 2))))
         ))
 
-(define (fib2 n)
+
+; Okay this is just wrong lol
+#; (define (fib2 n)
   (letrec ((env '())
            (extend-env (lambda (x y)
                          (cons (list x y) env)))
@@ -22,11 +24,24 @@
            (+ (apply-env (- n 2) env)(apply-env (- n 1) env)))
           (else (+ (fib (- n 1))(fib (- n 2)))))))
 
+; I am so lost actually :(
+ (define (fib m)
+   (letrec ((helper1 (lambda (n)
+                      (cond ((= n 0) 0)
+                            ((= n 1) 1)
+                            (else (extend-env (list n)
+                                              (list (+ (helper1 (- n 1))
+                                                       (helper1 (- n 2)) (- n 2)))
+                                              empty-env)))))
+            )
+     (apply-env (lambda (x) (helper1 x)) m)))
+
+
 
 ; EOPL Functions
 (define extend-env
-  (lambda (syms vals env)
-    (lambda (sym) (let ((pos (list-find-position sym syms)))
+  (lambda (keys vals env)
+    (lambda (sym) (let ((pos (list-find-position sym keys)))
                     (if (number? pos)
                         (list-ref vals pos)
                         (apply-env env sym))))))

@@ -125,15 +125,11 @@
 ; We hit our base case of an empty list, function returns an empty list
 (define b-inc
   (lambda (bigit)
-    (cond ((null? bigit) '())
-          ((>= (car bigit) 15)(let* ((next (cdr bigit)))
-                               (if (null? next)
-                                 (list 0 1)
-                                 (if (< (inc (car next)) 15)
-                                     (append (list 0 (inc (car next))) (cdr next))
-                                     (cons 0 (b-inc (cons (inc (car next)) (cdr next)))))
-                                         )))
+    (cond ((null? bigit) (list 1))
+          ((>= (car bigit) 15)
+           (cons 0 (b-inc (cdr bigit))))
           (else (append (list (inc (car bigit))) (cdr bigit))))))
+
 
 ; Actual Pred
 ; Bigit Decrement
@@ -142,18 +138,45 @@
 ; next number gets decremented
 ; We should check if the next number being decremented is 0, in which case
 ; we dont return it
-(define b-sub
+(define b-dec
   (lambda (bigit)
     (cond ((null? bigit) '())
+          ((and (= (length bigit) 1) (iszero (car bigit))) (list 0))
           ((iszero (car bigit))(let* ((next (cdr bigit)))
                                  (if (= (car next) 1)
                                      (if (null? (cdr next))
-                                         (cons 15 (b-sub (cdr next)))
+                                         (cons 15 (b-dec (cdr next)))
                                          (append (list 15 0)(cdr next)))
-                                     (cons 15 (b-sub next)))))
+                                     (cons 15 (b-dec next)))))
           (else (append (list (dec (car bigit))) (cdr bigit))))))
+
+; Operation #3
+(define bigit-zero?
+  (lambda (bigit)
+    (and (= (length bigit) 1) (iszero (car bigit)))))
                                      
-                                     
+
+(define bAdd
+  (lambda (x y)
+    (cond ((bigit-zero? x) y)
+          (else (b-inc (bAdd (b-dec x) y))))))
+
+(define bSub
+  (lambda (x y)
+    (cond ((bigit-zero? y) x)
+          (else (b-dec (bSub x (b-dec y)))))))
+
+
+(define bMult
+  (lambda (x y)
+    (cond ((bigit-zero? y) (list 0))
+          (else (bAdd x (bMult x (b-dec y)))))))
+
+
+(define bFact
+  (lambda (n)
+    (cond ((equal? n (list 1)) (list 1))
+          (else (bMult n (bFact (b-dec n)))))))
 
 
 (define base15 (myrep 15))

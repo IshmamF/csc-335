@@ -110,16 +110,6 @@
 (define test2 (extend-env '(c d e) '(4 5 6) test1))
 
 ; This works, and it uses 2.3 material but runtime is the same as regular fib function
-#;(define (fib n)
-  (define (helper n env)
-    (cond ((number? (apply-env env n))(apply-env env n)) 
-          (else (apply-env (extend-env
-                            (list n)
-                            (list (+ (helper (- n 1) env)
-                                     (helper (- n 2) env)))
-                            env) n))))
-  (helper n env3))
-
 (define (fib n)
   (define (helper n env)
     (let ((result (apply-env env n)))
@@ -133,4 +123,28 @@
 
 (define env3
   (extend-env (list 0 1) (list 0 1) empty-env))
+
+; Chatgpt Assisted Solution
+; The reason this works is because we're not just returning the result
+; We also return the environment associated with the result which
+; has the new value attached to it for our recursive calls 
+(define (fib n)
+  (define (helper n env)
+    (let ((result (apply-env env n)))
+      (if (number? result)
+          (cons result env)
+          (let* ((result1 (helper (- n 1) env))
+                 (fib1 (car result1))
+                 (env1 (cdr result1))
+                 (result2 (helper (- n 2) env1))
+                 (fib2 (car result2))
+                 (env2 (cdr result2))
+                 (new-fib (+ fib1 fib2))
+                 (new-env (extend-env (list n) (list new-fib) env2)))
+            (cons new-fib new-env)))))
+  (car (helper n env3)))
+
+(define env3
+  (extend-env (list 0 1) (list 0 1) empty-env))
+
          

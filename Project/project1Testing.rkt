@@ -25,7 +25,7 @@
           (else (+ (fib (- n 1))(fib (- n 2)))))))
 
 ; I am so lost actually :(
- (define (fib m)
+ #;(define (fib m)
    (letrec ((helper1 (lambda (n)
                       (cond ((= n 0) 0)
                             ((= n 1) 1)
@@ -61,6 +61,41 @@
                       (+ list-index-r 1)
                       #f))))))
 
-(define empty-env (lambda () (lambda (sym) (eopl:error 'apply-env "No binding for ~s" sym))))
+(define empty-env (lambda (sym) #f))
+
+
+; This is still not using memoization effectively...
+#; (define (fib-memo n env)
+  (let ((cached-value (apply-env env n)))
+    (if (number? cached-value)
+        cached-value
+        (let* ((v1 (fib-memo (- n 1) env))
+               (env1 (extend-env (list (- n 1)) (list v1) env))
+               (v2 (fib-memo (- n 2) env1))
+               (env2 (extend-env (list (- n 2)) (list v2) env1))
+               (result (+ v1 v2))
+               (new-env (extend-env (list n) (list result) env2)))
+          result))))
+
+#;(define (fib n)
+  (let ((env (extend-env (list 0 1) (list 0 1) empty-env)))
+    (fib-memo n env)))
+
+
+(define memo-fib
+  (lambda (n env)
+    (let* ((value (apply-env env n)))
+      (cond ((= n 0) 0)
+            ((= n 1) 1)
+            ((number? value) value)
+            (else (let* ((ans (+ (memo-fib (- n 1) env)(memo-fib (- n 2) env)))
+                         (newEnv (extend-env (list n) (list ans) env)))
+                    (apply-env newEnv n)))))))
+
+(define newFib
+  (lambda (n)
+    (memo-fib n empty-env)))
+
+
 
          

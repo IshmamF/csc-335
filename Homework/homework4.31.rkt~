@@ -1,3 +1,9 @@
+; Problem: Write a procedure lexical-address that takes any expression and returns the expression with every variable reference v replaced by a list (v : d p), as above.
+; If the variable reference v is free, produce the list (v free) instead.
+; Example:
+; > (lexical-address '(lambda (a b c) (if (eqv? b c) ((lambda (c) (cons a c)) a) b)))
+; (lambda (a b c) (if ((eqv? free) (b : 0 1) (c : 0 2)) ((lambda (c) ((cons free) (a : 1 0) (c : 0 0))) (a : 0 0)) (b : 0 1)))
+
 ; Design Idea:
 ; As we recurse through the input, we will hold on to a list of all parameters, called "env".
 ; If we're given just a symbol, we check for it's depth and position in the "env". If the
@@ -44,8 +50,8 @@
     (list 'lambda a b)))
 
 (define make-if
-  (lambda (a b)
-    (list 'if a b)))
+  (lambda (a b c)
+    (list 'if a b c)))
 
 ; Selectors
 
@@ -60,6 +66,10 @@
 (define third
   (lambda (exp)
     (caddr exp)))
+
+(define fourth
+  (lambda (exp)
+    (cadddr exp)))
 
 ; Classifiers
 
@@ -77,7 +87,7 @@
 
 ; Main Program
 
-(define lexical-scope
+(define lexical-address
   (lambda (exp)
     (define helper
       (lambda (env exp)
@@ -86,8 +96,10 @@
             (let* ((add-params (cons (second exp) env)))
               (cond
                 ((check-lambda exp) (make-lambda (second exp) (helper add-params (third exp))))
-                ((check-if exp)(make-if (helper env (second exp)) (helper env (third exp))))
+                ((check-if exp)(make-if (helper env (second exp)) (helper env (third exp)) (helper env (fourth exp))))
                 (else (mymap (lambda (exp) (helper env exp)) exp))
                 )))))
     (helper '() exp)))
-        
+
+(lexical-address '(lambda (a b c) (if (eqv? b c) ((lambda (c) (cons a c)) a) b)))
+

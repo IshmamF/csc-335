@@ -1,5 +1,5 @@
 ; Regular Fibonacci Sequence
-#; (define (fib n)
+ (define (fib0 n)
   (cond ((zero? n) 0)
         ((= n 1) 1)
         (else (+ (fib (- n 1))(fib (- n 2))))
@@ -36,6 +36,8 @@
             )
      (apply-env (lambda (x) (helper1 x)) m)))
 
+          
+
 
 
 ; EOPL Functions
@@ -61,6 +63,7 @@
                       (+ list-index-r 1)
                       #f))))))
 
+<<<<<<< Updated upstream
 (define empty-env (lambda (sym) #f))
 
 
@@ -97,5 +100,37 @@
     (memo-fib n empty-env)))
 
 
+=======
+; Updated empty-env to return #f 
+(define empty-env (lambda (sym) #f))
+>>>>>>> Stashed changes
 
+; experimenting with looking up
+(define test1 (extend-env '(a b) '(1 2) empty-env))
+(define test2 (extend-env '(c d e) '(4 5 6) test1))
+
+; This works, and it uses 2.3 material but runtime is the same as regular fib function
+#;(define (fib n)
+  (define (helper n env)
+    (cond ((number? (apply-env env n))(apply-env env n)) 
+          (else (apply-env (extend-env
+                            (list n)
+                            (list (+ (helper (- n 1) env)
+                                     (helper (- n 2) env)))
+                            env) n))))
+  (helper n env3))
+
+(define (fib n)
+  (define (helper n env)
+    (let ((result (apply-env env n)))
+      (if (number? result)
+          result
+          (let ((new-result (+ (helper (- n 1) env)
+                               (helper (- n 2) env))))
+            (apply-env (extend-env (list n) (list new-result) env) n)))))
+  (helper n env3))
+
+
+(define env3
+  (extend-env (list 0 1) (list 0 1) empty-env))
          

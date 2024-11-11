@@ -41,6 +41,8 @@
 
 
 ; EOPL Functions
+; Can probably optimize extend-env by not using lists, and just have key and val
+; would remove the need to find position and list-ref 
 (define extend-env
   (lambda (keys vals env)
     (lambda (sym) (let ((pos (list-find-position sym keys)))
@@ -63,7 +65,6 @@
                       (+ list-index-r 1)
                       #f))))))
 
-<<<<<<< Updated upstream
 (define empty-env (lambda (sym) #f))
 
 
@@ -99,11 +100,8 @@
   (lambda (n)
     (memo-fib n empty-env)))
 
-
-=======
 ; Updated empty-env to return #f 
 (define empty-env (lambda (sym) #f))
->>>>>>> Stashed changes
 
 ; experimenting with looking up
 (define test1 (extend-env '(a b) '(1 2) empty-env))
@@ -159,4 +157,21 @@
 ; Figma Drawing on how the function works
 ; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
 
-         
+; Alternative Solution using a list
+(define helper
+  (lambda (n memo)
+    (if (list? (assv n memo))
+        (list (cadr (assv n memo)) memo) ; can create our own implementation of assv for apply-env
+        (let* ((result1 (helper (- n 1) memo))
+               (val1 (car result1))
+               (memo1 (cadr result1))
+               (result2 (helper (- n 2) memo1)) ; you need to get/use the updated memo from result1
+               (val2 (car result2))
+               (memo2 (cadr result2))
+               (newVal (+ val1 val2))
+               (newMemo (cons (list n newVal) memo2))) ; can probably change the extend-env to do this simple task
+          (list newVal newMemo)))))
+(define fib2
+  (lambda (n)
+    (car (helper n `((0 1)(1 1)(2 1))))))
+        

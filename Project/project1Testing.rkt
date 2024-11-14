@@ -100,10 +100,7 @@
   (lambda (n)
     (memo-fib n empty-env)))
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 1ee3985 (updated)
 ; Updated empty-env to return #f 
 (define empty-env (lambda (sym) #f))
 
@@ -131,7 +128,7 @@
 ; The reason this works is because we're not just returning the result
 ; We also return the environment associated with the result which
 ; has the new value attached to it for our recursive calls
-<<<<<<< HEAD
+
 ; Also once we can use the environment returned from the doing the first
 ; recursive call, which is what allows us to have extended environments
 ; Its a lot to think about to be honest, but understand that we return
@@ -141,9 +138,8 @@
 ; the things that are computed on the left (n - 1) would need to be
 ; computed again on the right (n - 2). Everything else, is consistent with
 ; my previous solution above.
-=======
+
 ; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
->>>>>>> 1ee3985 (updated)
 (define (fib n)
   (define (helper n env)
     (let ((result (apply-env env n))) ; checking the table
@@ -163,7 +159,6 @@
 (define env3
   (extend-env (list 0 1) (list 0 1) empty-env))
 
-<<<<<<< HEAD
 ; Figma Drawing on how the function works
 ; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
 
@@ -185,7 +180,3 @@
   (lambda (n)
     (car (helper n `((0 1)(1 1)(2 1))))))
         
-=======
-
-         
->>>>>>> 1ee3985 (updated)

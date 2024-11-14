@@ -100,7 +100,6 @@
   (lambda (n)
     (memo-fib n empty-env)))
 
-
 ; Updated empty-env to return #f 
 (define empty-env (lambda (sym) #f))
 
@@ -179,4 +178,3 @@
 (define fib2
   (lambda (n)
     (car (helper n `((0 1)(1 1)(2 1))))))
-        

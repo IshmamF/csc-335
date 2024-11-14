@@ -1,0 +1,45 @@
+#lang eopl
+
+(define-datatype stack stack?
+  (empty-stack)
+  (non-empty-stack
+   (top symbol?)
+   (rest stack?)))
+
+(define push
+  (lambda (new s)
+    (non-empty-stack new s)))
+
+(define pop
+  (lambda (s)
+    (cases stack s
+      (empty-stack () #f)
+      (non-empty-stack (top rest) rest))))
+
+(define top
+  (lambda (s)
+    (cases stack s
+      (empty-stack () #f)
+      (non-empty-stack (top rest) top))))
+
+;
+(define s1 empty-stack)
+(define s2 (push 'a (s1)))
+(define top1 (top s2))
+
+(define (module msg)
+  (define (f1 x) 'f1)
+  (define (f2 x) 'f2)
+  (define (f3 x) 'f3)
+  (define (dispatch m)
+    (cond ((eq? m 1) f1)
+          ((eq? m 2) f2)
+          ((eq? m 3) f3)))
+  (dispatch msg))
+
+(module 1) ; function f1
+(module 2) ; function f2
+(module 3) ; function f3
+
+; Is there possibility of the stack persisting
+; 

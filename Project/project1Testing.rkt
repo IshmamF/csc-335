@@ -41,6 +41,8 @@
 
 
 ; EOPL Functions
+; Can probably optimize extend-env by not using lists, and just have key and val
+; would remove the need to find position and list-ref 
 (define extend-env
   (lambda (keys vals env)
     (lambda (sym) (let ((pos (list-find-position sym keys)))
@@ -98,7 +100,6 @@
   (lambda (n)
     (memo-fib n empty-env)))
 
-
 ; Updated empty-env to return #f 
 (define empty-env (lambda (sym) #f))
 
@@ -126,7 +127,19 @@
 ; The reason this works is because we're not just returning the result
 ; We also return the environment associated with the result which
 ; has the new value attached to it for our recursive calls
+
+; Also once we can use the environment returned from the doing the first
+; recursive call, which is what allows us to have extended environments
+; Its a lot to think about to be honest, but understand that we return
+; the environment instead of just the result is very important.
+; Then the using environment from (helper (n-1) env) part allows us to
+; not compute the same solution again. That's what we want to happen since
+; the things that are computed on the left (n - 1) would need to be
+; computed again on the right (n - 2). Everything else, is consistent with
+; my previous solution above.
+
 ; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
+
 (define (fib n)
   (define (helper n env)
     (let ((result (apply-env env n))) ; checking the table
@@ -146,5 +159,23 @@
 (define env3
   (extend-env (list 0 1) (list 0 1) empty-env))
 
+; Figma Drawing on how the function works
+; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
 
-         
+; Alternative Solution using a list
+(define helper
+  (lambda (n memo)
+    (if (list? (assv n memo))
+        (list (cadr (assv n memo)) memo) ; can create our own implementation of assv for apply-env
+        (let* ((result1 (helper (- n 1) memo))
+               (val1 (car result1))
+               (memo1 (cadr result1))
+               (result2 (helper (- n 2) memo1)) ; you need to get/use the updated memo from result1
+               (val2 (car result2))
+               (memo2 (cadr result2))
+               (newVal (+ val1 val2))
+               (newMemo (cons (list n newVal) memo2))) ; can probably change the extend-env to do this simple task
+          (list newVal newMemo)))))
+(define fib2
+  (lambda (n)
+    (car (helper n `((0 1)(1 1)(2 1))))))

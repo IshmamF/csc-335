@@ -115,6 +115,26 @@
                           (cons r q)))))))
     rep))
 
+; (15 15) <- 255
+
+; 255/16 = 15 remainder 15
+
+; 123 <- 123/16 = 7 remainder 11
+; 7 <- 7/16 = 7 
+; (11 7)
+
+; ((15*16^0) + (15*16^1)) <- base 16
+; (0 0 1) + (0 2 3) = (0 2 4)
+; (15) + (1) = (16?) (0 1)
+
+; (0 1) -> (1 1)
+; (1 1) -> (0 1)
+
+; <=
+; =>
+; check base case
+; define base case
+
 ; Actual Succ
 ; Bigit Increment
 ; What are all the cases?
@@ -126,9 +146,11 @@
 (define b-inc
   (lambda (bigit)
     (cond ((null? bigit) (list 1))
-          ((>= (car bigit) 15)
+          ((= (car bigit) 15)
            (cons 0 (b-inc (cdr bigit))))
           (else (append (list (inc (car bigit))) (cdr bigit))))))
+; (15 1 3 5) -> (0 2 3 5)
+; (15 15) -> (0 0 1)
 
 
 ; Actual Pred
@@ -149,6 +171,8 @@
                                          (append (list 15 0)(cdr next)))
                                      (cons 15 (b-dec next)))))
           (else (append (list (dec (car bigit))) (cdr bigit))))))
+; (0 1 3) -> (15 0 3)
+; (0) <- I dont want negatives
 
 ; Operation #3
 (define bigit-zero?
@@ -188,6 +212,8 @@
 
 ; BNF
 ; bintree ::= <number> | <symbol> <bintree> <bintree>
+; int var = 0;
+; int function (int var) {}
 
 (define-datatype bintree bintree?
   (leaf-node (datum number?))
@@ -280,6 +306,10 @@
             (else third)))))
 
 
+; (interior-node (leaf-node) (leaf-node)) 
+; (interior-node (leaf-node) (interior-node))
+; (interior-node (interior-node) (leaf-node))
+; (interior-node (interior-node) (interior-node))
 (define (max-interior tree)
   (letrec ((helper
   (lambda (tree)

@@ -9,16 +9,8 @@
 
 ; BNF
 ; <expression> ::== identifier
-;              ::== ('lambda (identifier) (<expression>)
+;              ::== (lambda (identifier) (<expression>)
 ;              ::== (<expression><expression>)
-
-;cond ((symbol? exp) (do-something))
-;     ((check-lambda exp) (recurse-through-body))
-;     (else (recurse-through-each))
-
-; Idea: Remove all the bound variables, so we're left with free variables
-
-; (`lambda (`x) (`lambda (`y) (`x `y)))
 
 ; Data structure:
 
@@ -93,9 +85,7 @@
 ; post: a set of all the variables that occur free in the
 ; expression
 
-; (`lambda (`x) (`lambda (`y) (`x `y)))
-
-; (free-vars 'x) <- '(x)
+; (`lambda (`x) (`lambda (`y) `x `+ `y))
 (define free-vars
   (lambda (exp)
     (cond ((symbol? exp) (list exp))

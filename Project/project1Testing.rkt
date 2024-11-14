@@ -139,7 +139,6 @@
 ; my previous solution above.
 
 ; https://www.figma.com/board/Owa4cGKHvUMKypQY3dsEoz/Untitled?node-id=0-1&t=3eyy1VZNEhhA55qk-1
-
 (define (fib n)
   (define (helper n env)
     (let ((result (apply-env env n))) ; checking the table

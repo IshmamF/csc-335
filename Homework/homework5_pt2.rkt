@@ -9,7 +9,7 @@
 ; tree of the form indicated by the above grammar, but with lex-info and free-info
 ; variants in place of var-exp variants.
 
-
+; Datatype Defintion
 (define-datatype expression expression?
   (lit-exp (datum number?))
   (var-exp (id symbol?))
@@ -19,6 +19,7 @@
   (lambda-exp (ids (list-of symbol?)) (body expression?))
   (app-exp (rator expression?) (rand expression?)))
 
+; Parsing an Expression and Converting to List
 (define (parse-expression exp)
   (cases expression exp
     (lex-info (id depth position) (list id ': depth position))
@@ -31,8 +32,25 @@
     (lambda-exp (ids body) (list 'lambda ids (parse-expression body)))
     (app-exp (rator rand) (list (parse-expression rator) (parse-expression rand)))))
 
+; Examples
 (define example (lambda-exp (list 'a 'b) (var-exp 'a)))
 
+(define example1
+  (lambda-exp
+    (list 'x 'y)
+    (if-exp
+      (app-exp 
+        (var-exp 'f)
+        (lit-exp 42))
+      (lambda-exp
+        (list 'z)
+        (app-exp
+          (var-exp 'x)
+          (var-exp 'z)))
+      (var-exp 'y))))
+
+
+; Parsing an expression represented as a list and converting it into abstract syntax
 (define (unparse-expression exp)
   (cond ((symbol? exp) (var-exp exp))
         ((number? exp) (lit-exp exp))
@@ -45,6 +63,7 @@
         (else (app-exp (unparse-expression (car exp)) (unparse-expression (cadr exp)) ))
         ))
 
+; Gets lexical address within an expression
 (define (lexical-address exp env)
   (cases expression exp
     (lit-exp (datum) (if (isFree? datum env)
@@ -83,11 +102,101 @@
 ; duplicates) of all the variables that occur free in the expression. Similarly, write a procedure
 ; bound-vars that returns a set of all the variables that occur bound in its argument.
 
+; Occurs Free Implementation
 (define (occurs-free? exp)
   (cases expression exp
     (var-exp (id) (list id))
     (lit-exp (datum) (list datum))
-    (lambda-exp (ids body) (do stuff with ids and (recursive call on body)))
-    (if-exp (test-exp true-exp false-exp) (union-set on recursive calls))
-    (app-exp (rator rand) (union-set on recursive calls))
+    (lex-info (id depth position) '())
+    (free-info (id free) (list id))
+    (lambda-exp (ids body) (remove-ids ids (occurs-free? body)))
+    (if-exp (test-exp true-exp false-exp) (union-set (occurs-free? test-exp)
+                                          (union-set (occurs-free? true-exp)
+                                                     (occurs-free? false-exp))))
+    (app-exp (rator rand) (union-set (occurs-free? rator)
+                                     (occurs-free? rand)))
+    ))
+
+(define union-set
+  (lambda (l1 l2)
+    (cond ((null? l1) l2)
+          ((member (car l1) l2) (union-set (cdr l1) l2))
+          (else (cons (car l1) (union-set (cdr l1) l2))))))
+
+(define remove-ids
+  (lambda (ids body)
+    (cond
+    ((null? ids) body)
+    (else (remove-ids (cdr ids) (remove (car ids) body))))))
+
+(define accumulate
+  (lambda (op seq init)
+    (cond ((null? seq) init)
+          (else (op (car seq) (accumulate op (cdr seq) init))))))
+
+(define remove
+  (lambda (id body)
+    (accumulate (lambda (x y) (if (eq? id x)
+                                  y
+                                  (cons x y))) body '())))
+
+; Occurs Bound Implementation
+
+; Professor Way or Idea from Office Hour
+; I think there's a bug with this since you're doing the union-set of all the variables possible
+; with the lambda parameters that get called within the free variables.
+#; (define (occurs-bound? exp)
+  (cases expression exp
+    (var-exp (id) (list id))
+    (lit-exp (datum) (list datum))
+    (lex-info (id depth position) (list id))
+    (free-info (id free) '())
+    (lambda-exp (ids body) (union-set (occurs-bound? body)
+                                      (elements-of ids (occurs-free? body))))
+    (if-exp (test-exp true-exp false-exp) (union-set (occurs-bound? test-exp)
+                                          (union-set (occurs-bound? true-exp)
+                                                     (occurs-bound? false-exp))))
+    (app-exp (rator rand) (union-set (occurs-bound? rator)
+                                     (occurs-bound? rand)))
+    ))
+
+(define elements-of
+  (lambda (ids lst)
+    (cond ((null? ids) '())
+          ((member (car ids) lst) (cons (car ids) (elements-of (cdr ids) lst)))
+          (else (elements-of (cdr ids) lst)))))
+
+; My Way
+#;(define (occurs-bound? exp)
+  (define (helper exp)
+    (cases expression exp
+      (var-exp (id) (list id))
+      (lit-exp (datum) (list datum))
+      (lex-info (id depth position) (list id))
+      (free-info (id free) '())
+      (lambda-exp (ids body) (helper body))
+      (if-exp (test-exp true-exp false-exp) (union-set (helper test-exp)
+                                                       (union-set (helper true-exp)
+                                                                  (helper false-exp))))
+      (app-exp (rator rand) (union-set (helper rator)
+                                       (helper rand)))
+      ))
+  (filter-vars (helper exp) (occurs-free? exp)))
+
+
+(define filter-vars
+  (lambda (ids freeVars)
+    (accumulate (lambda (x y) (if (member x freeVars)
+                                  y
+                                  (cons x y))) ids '())))
+
+; Using intersect set fails because it only keeps the variable at the top of the expression
+(define intersect-set
+  (lambda (lst1 lst2)
+    (cond ((null? lst1) '())
+          ((null? lst2) '())
+          ((member (car lst1) lst2) (cons (car lst1)
+                                          (intersect-set (cdr lst1) lst2)))
+          (else (intersect-set (cdr lst1) lst2)))))
+
     

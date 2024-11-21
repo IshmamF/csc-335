@@ -167,7 +167,7 @@
           (else (elements-of (cdr ids) lst)))))
 
 ; My Way
-#;(define (occurs-bound? exp)
+(define (occurs-bound? exp)
   (define (helper exp)
     (cases expression exp
       (var-exp (id) (list id))

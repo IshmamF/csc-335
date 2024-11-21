@@ -198,6 +198,3 @@
           ((member (car lst1) lst2) (cons (car lst1)
                                           (intersect-set (cdr lst1) lst2)))
           (else (intersect-set (cdr lst1) lst2)))))
-
-ok i make a change lemem see if this works
-    

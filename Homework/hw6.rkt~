@@ -2,6 +2,7 @@
 
 ; Datatype Defintion
 (define-datatype expression expression?
+  (lit-exp (datum number?))
   (var-exp (id symbol?))
   (if-exp (test-exp expression?) (true-exp expression?) (false-exp expression?))
   (lambda-exp (ids (list-of symbol?)) (body expression?))
@@ -13,17 +14,17 @@
     (let ((syms (all-ids exp)))
       (letrec ((loop (lambda (n)
                        (let ((sym (string->symbol
-                                   (string-append (symbol->string s)
+                                   (string-append s
                                                   (number->string n)))))
                          (if (memv sym syms)
                              (loop (+ n 1))
                              sym)))))
         (loop 0)))))
 
-
 (define all-ids
   (lambda (exp)
     (cases expression exp
+      (lit-exp (datum) (list datum))
       (var-exp (id) (list id))
       (if-exp (test-exp true-exp false-exp) (union-set (all-ids test-exp)
                                                        (union-set (all-ids true-exp)
@@ -43,7 +44,7 @@
     (if-exp
       (app-exp 
         (var-exp 'f)
-        (var-exp 's))
+        (lit-exp 42))
       (lambda-exp
         (list 'z 'd)
         (app-exp
@@ -51,7 +52,5 @@
           (var-exp 'z)))
       (var-exp 'y))))
 
-
-(define freshid-ex (fresh-id (app-exp (lambda-exp (list 'w2) (app-exp (var-exp 'w1) (var-exp 'w0))) (var-exp 'w3)) 'w))
 
 

@@ -75,29 +75,10 @@
 
 
 ;; Though Process:
-;; Substitute exp replaces the id with an expression in all occurances. However
-;; it seems we can't change the substitute expression? so maybe we can
-;; do the renaming after we've substituted for all the variables. Or maybe we
-;; we can pass the substitute-exp into a function to change it, however,
-;; to use the fresh-ids, we'd need to know what the next number is.
-;; an env does come to mind, but doesn't seem like it would help cuz there can be
-;; free variables. Another idea that comes to mind is what if at the base case,
-;; we return the variable we renamed... However, unfortunately our subst expects
-;; to return only expressions at every call.
-
-;; Design Idea:
-;; I think what we would have to do is, substitute all the variables.
-;; Go through the expression again, count the number of variables there are
-;; Iterate through the expression, using fresh-ids, until the loop finishes.
-;; Question: Do we assume there's only one variable within a substitute expression?
-;; We may need to use all-ids to get all the variables, then count how many of them
-;; have more than one instances, and then replace those.
-
-;; Update:
 ;; The only time we need to rename is when there's a conflict where the variable
 ;; is both free and bounded in the same expression after subtitution. In which case
-;; we should rename the bounded variable. My previous thought process/design idea
-;; was completely stupid. 
+;; we should rename the bounded variable.
+
 (define lambda-calculus-subst
   (lambda (exp subst-exp subst-id)
     (letrec ((subst 
@@ -121,52 +102,7 @@
                    ))))
       (subst exp))))
 
-(define (countVars exp var)
-  (cases expression exp
-    (var-exp (id)
-             (if (eqv? id var)
-                 1
-                 0))
-    (lambda-exp (id body)
-                (countVars body var))
-    (app-exp (rator rand)
-             (+ (countVars rator var) (countVars rand var)))
-    (lit-exp (datum) 0)
-    (if-exp (test-exp true-exp false-exp) (+ (countVars test-exp var)
-                                                  (countVars true-exp var)
-                                                  (countVars false-exp var)))
-    (primapp-exp (prim rand1 rand2)
-                 (+ (countVars rand1 var) (countVars rand2 var)))
-    ))
-
-(define test (lambda-calculus-subst example1 (var-exp 'x) 'z))
-(countVars test 'x) ; returns 2
-(all-ids test) ; returns (f s z x y)
-
-(define (findMultiVars allIds exp)
-  (if (null? allIds)
-      '()
-      (let* ((curr (car allIds))
-             (count (countVars exp curr)))
-        (cond ((> count 1) (cons (list curr count) (findMultiVars (cdr allIds) exp)))
-              (else (findMultiVars (cdr allIds) exp))))))
-
-(findMultiVars (all-ids test) test) ; returns ((x 2))
-
-#;(define (replace-vars exp vars)
-  (if (null? vars)
-      exp
-      (let* ((curr-list (car vars))
-             (curr-var (car curr-list))
-             (curr-num (cadr curr-list))
-             (updated-exp (update-exp exp curr-var curr-num)))
-        (replace-vars updated-exp (cdr vars)))))
-
              
-
-
-        
-
 
 
 ; Exercise 2.24 [     ] Define a substitution to be a function whose domain is the set of Scheme symbols

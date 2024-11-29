@@ -75,42 +75,22 @@
                 (iterate_row updated_table (cdr row) s1 s2 (+ i 1) j)))
         ))
 
+
 (define (helper table iterable s1 s2 i j)
   (cond ((= j (+ (length s2) 1)) table)
         (else (let* ((curr_row (car iterable))
-                     (new-table (iterate_row table curr_row s1 s2 i j)))
-                (helper new-table (cdr iterable) s1 s2 i (+ j 1))))))
+                     (new-result (iterate_row table curr_row s1 s2 i j)))
+                (helper new-result (cdr iterable) s1 s2 i (+ j 1))))))
+
 
 ;; memoized LCS, runs in O(m * n) time complexity
 (define (memo-LCS s1 s2)
   (let* ((make-table (memoTable s1 s2))
          (make-iter (iterable s1 s2))
-         (return-table (helper make-table make-iter s1 s2 1 1)))
-    (get_memo return-table (length s1) (length s2))))
+         (return-table (helper make-table make-iter s1 s2 1 1))
+         (SubstrLength (get_memo return-table (length s1) (length s2))))
+    return-table))
 
-
-;; this isnt properly memoized so ill convert it into regular recursion
-#;(define (helper table s1 s2 i j)
-  (cond ((or (= i (length s1)) (= j (length s2))) (list 0 table))
-        ((not (= (get_memo table i j) -1)) ((display table)
-                                            list (get_memo table i j) table))
-        ((eq? (list-ref s1 i) (list-ref s2 j)) (let* ((call (helper table s1 s2 (+ i 1) (+ j 1)))
-                                                      (call-val (car call))
-                                                      (call-table (cadr call))
-                                                      (curr-val (+ 1 call-val))
-                                                      (new-table (add_memo call-table curr-val i j)))
-                                                 (list curr-val new-table)))
-        (else (let* ((call-i (helper table s1 s2 (+ i 1) j))
-                     (call-j (helper table s1 s2 i (+ j 1)))
-                     (i-val (car call-i))
-                     (j-val (car call-j))
-                     (max-info (if (>= i-val j-val)
-                                   call-i
-                                   call-j))
-                     (max-val (car max-info))
-                     (max-table (cadr max-info))
-                     (new-table (add_memo max-table max-val i j)))
-                (list  max-val new-table)))))
 
 (define (LCS s1 s2)
   (cond ((or (null? s1) (null? s2)) 0)
@@ -120,8 +100,13 @@
                 (max call-i call-j)))
         ))
 
-(define s1 '(a g g t a b))
+
+(define s1 '(a g g t a b a))
 (define s2 '(g x t x a y b))
+(define str1 '(A B C D E F G H I J K L M N O P Q R S T))
+(define str2 '(X Y Z A B Q R S T U V W A B C D E))
+; (LCS str1 str2) takes a long time to compute
+(memo-LCS s1 s2)
 
 (define table (memoTable s1 s2))
 (define newTable (add_memo table 1 1 1))

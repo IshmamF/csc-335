@@ -1,66 +1,81 @@
 #lang eopl
 
-;(define repl read-eval-print)
+(define scanner-spec-3-1
+  '((white-sp
+     (whitespace)                                    skip)
+    (comment
+     ("%" (arbno (not #\newline)))                   skip)
+    (identifier
+     (letter (arbno (or letter digit "?")))          symbol)
+    (number
+     (digit (arbno digit))                           number)
+    ))
 
-;(cond-exp (test-exps conseq exp)
+(define grammar-3-19
+  '((program
+     (expression) a-program)
+    (expression
+     (number)
+     lit-exp)
+    (expression
+     (identifier)
+     var-exp)
+    (expression
+     (primitive "(" (separated-list expression ",")  ")" )
+     primapp-exp)
+    (expression
+     ("if" arbno expression "then" expression "else" expression)
+     if-exp)
+    (expression
+     ("cond" (arbno expression "==>" expression ) "end")
+     cond-exp)
+    (expression
+     ("let" (arbno expression "=" expression ) "in" expression)
+     let-exp)
+    (primitive ("+")
+               add-prim)
+    (primitive ("-")
+               subtract-prim)
+    (primitive ("*")
+               mult-prim)
+    (primitive ("add1")
+              incr-prim)
+    (primitive ("sub1")
+               decr-prim)
+    (primitive ("minus")
+               (minus-prim))
+    (primitive ("cons")
+               (cons-prim))
+    (primitive ("car")
+               (car-prim))
+    (primitive ("cdr")
+               (cdr-prim))
+    (primitive ("list")
+               (list-prim))
+    (primitive ("eq?")
+               eq-prim)
+    (primitive ("equal?")
+               equal-prim)
+    (primitive ("zero?")
+               zero-prim)
+    (primitive ("greater?")
+               greater-prim)
+    (primitive ("less?")
+               less-prim)
+    (primitive ("null?")
+               null-prim)
+    ))
 
-#;(let-exp (ids rands body)
+(define repl read-eval-print)
+
+(cond-exp (test-exps conseq exp)
+
+(let-exp (ids rands body)
          (let ((args (eval-let-exprands rands env)))
            (eval-expression body (extendenv ids args env))))
 
 ;; let-exp's last line reads as evaluating the expression's body in an enviornment that's been extended by the let bindings.
 ;; Does this correctly implement let?
-
-(define scheme-value?
-  (lambda (v) #t))
-
-(define-datatype program program?
-  (a-program (pgm expression?)))
-
-(define-datatype primitive primitive?
-  (mult-prim)
-  (add-prim)
-  (subtract-prim)
-  (incr-prim)
-  (decr-prim))
-
-(define-datatype expression expression?
-  (lit-exp (datum number?))
-  (var-exp (id symbol?))
-  (primapp-exp (prim primitive?) (rands (list-of expression?))))
-
-(define-datatype environment environment?
-  (empty-env)
-  (extend-env (ids (list-of symbol?))
-              (vals (list-of scheme-value?))
-              (env environment?)))
-
-(define empty-environment
-  (lambda () empty-env))
-
-(define extend-environment
-  (lambda (ids vals env)
-    (extend-env ids vals env)))
-
-(define find-list-index
-  (lambda (ids sym)
-    (letrec ((helper (lambda (ids sym index)
-                       (cond ((null? ids) #f)
-                             ((eq? (car ids) sym) index)
-                             (else (helper (cdr ids) sym (+ index 1)))))))
-      (helper ids sym 0))))
-
-(define apply-env
-  (lambda (env sym)
-    (cases environment env
-      (empty-env () (eopl:error 'apply-env "No binding for ~s" sym))
-      (extend-env (ids vals env)
-                  (let ((index (find-list-index ids sym)))
-                    (if (number? index)
-                        (list-ref vals index)
-                        (apply-env env sym)))))))
-                      
-
 
 (define true-value?
   (lambda (x) (not (zero? x))))
@@ -70,8 +85,6 @@
     (cases program pgm
       (a-program (body)
                  (eval-expression body (init-env))))))
-
-
 
 (define eval-expression
   (lambda (exp env)

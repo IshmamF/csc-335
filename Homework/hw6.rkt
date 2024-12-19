@@ -78,6 +78,15 @@
 ;; The only time we need to rename is when there's a conflict where the variable
 ;; is both free and bounded in the same expression after subtitution. In which case
 ;; we should rename the bounded variable.
+;; Do we only know if there's a conflict after the substitution ?
+;; Im assuming at every lambda expression, we should use occurs bound
+;; and occurs free, and do the intersection of both of these
+;; to see if there are any conflicting variables...
+;; Well actually you'd probably have to get all-ids, then check
+;; each id if it occurs free & occurs bound at the same time...
+;; Another issue, we can't change the substituted expression
+;; and have to change the variable with lambda expression
+;; and values before subst-exp.
 
 (define lambda-calculus-subst
   (lambda (exp subst-exp subst-id)

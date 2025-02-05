@@ -1,0 +1,2 @@
+## Notice 
+Refer to EOPL-Chapter3 folder in Notes section as everything was crammed near the end. If you got this far, may god help you and use whatever resources necessary to understand the concepts. Hindsight, it's not too bad but takes time to understand - if he's not rushing you or you're ahead, you're chillin. 

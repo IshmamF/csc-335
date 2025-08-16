@@ -1,8 +1,8 @@
 ### Ishmam's Repo for All Things 335
-> All the homework and work I have done are in this folder. I didn't really document my process when tutoring, and near the end, the quality/quantity of my work degraded due to prioritizing interview preparations, projects, and other finals. I think this repo is a great resource to get a base understanding and have examples to start with. I wouldn't completely trust all the answers unless it's the graded exams and projects.
+> All the homework and work I have done are in this folder. Near the end of the semester, the quality/quantity of my work degraded due to prioritizing interview preparations, projects, and other finals. Also didn't really document much for tutoring. I think this repo is a great resource to get a base understanding and have examples to start with. I wouldn't completely trust all the answers unless it's the graded exams and projects.
 
 ## Advice
-- I personally don't think attending class is mandatory to pass this class. If you want an A however, you should go to class.
+- I personally don't think attending class is mandatory to pass this class, though it helps at times. If you want an A however, you should go to class.
 - Early in the semester, prioritize The Little Schemer (TLS). I would try to get to chapter 7 as soon as possible.
 - Prioritize homework, TLS, and whatever practice questions you can get your hands on (like previous exams)
 - Use AI if you have questions or gap in your understanding
